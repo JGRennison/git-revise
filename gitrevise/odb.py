@@ -161,6 +161,9 @@ class Repository:
     sign_commits: bool
     """sign commits with gpg"""
 
+    preserve_committer: bool
+    """preserve committer"""
+
     gpg: bytes
     """path to GnuPG binary"""
 
@@ -175,6 +178,7 @@ class Repository:
         "default_committer",
         "index",
         "sign_commits",
+        "preserve_committer",
         "gpg",
         "_objects",
         "_catfile",
@@ -654,7 +658,12 @@ class Commit(GitObj):
             if unchanged:
                 return self
 
-        return self.repo.new_commit(tree, parents, message, author)
+        if self.repo.preserve_committer:
+            committer = self.committer
+        else:
+            committer = None
+
+        return self.repo.new_commit(tree, parents, message, author, committer)
 
     def _persist_deps(self) -> None:
         self.tree().persist()

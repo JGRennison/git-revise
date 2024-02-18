@@ -42,6 +42,11 @@ def build_parser() -> ArgumentParser:
         action="store_true",
         help="reset the author of the targeted commit",
     )
+    parser.add_argument(
+        "--preserve-committer",
+        action="store_true",
+        help="preserve the committer of the targeted commit",
+    )
     parser.add_argument("--version", action="version", version=__version__)
     parser.add_argument(
         "--edit",
@@ -237,6 +242,8 @@ def inner_main(args: Namespace, repo: Repository) -> None:
         repo.sign_commits = True
     if args.no_gpg_sign:
         repo.sign_commits = False
+
+    repo.preserve_committer = args.preserve_committer
 
     # Create a commit with changes from the index
     staged = None
